@@ -5,8 +5,6 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-
 # error: language item required, but not found: `eh_personality`
 #  profile  for `cargo build`
 [profile.dev]
@@ -15,3 +13,7 @@ panic = "abort" # disable stack unwinding  = disable free memory on panic
 #  profile  for `cargo build --release`
 [profile.release]
 panic = "abort" # disable stack unwinding on panic
+
+[dependencies]
+bootloader = "0.9.23"
+
