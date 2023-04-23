@@ -2,7 +2,6 @@
 #![no_main] // error: requires `start` lang_item
 
 // error: `#[panic_handler]` function required, but not found
-// error: language item required, but not found: `eh_personality`
 use core::panic::PanicInfo;
 
 #[panic_handler]
