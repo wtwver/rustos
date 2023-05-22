@@ -12,8 +12,8 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[macro_export]
 macro_rules! println {
-    () => ($crate::print(b"Default"));
-    ($($arg:tt)*) => ($crate::print(b"ggg"));
+    () => (print(b"Default"));
+    ($($arg:tt)*) => (print($($arg)*));
 }
 
 static HELLO: &[u8] = b"Default text";
@@ -30,7 +30,8 @@ fn print(name: &[u8]) {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("asad");
+    println!();
+    println!(b"ggggggggggggggggggggggggggg");
 
     loop {}
 }
