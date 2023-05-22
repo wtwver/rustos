@@ -1,5 +1,10 @@
 # rustos
 
+# Todo
+
+githib copilot
+mv to new file
+
 ## A Freestanding Rust Binary
 
 - cargo new blog_os --edition 2018

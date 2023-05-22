@@ -13,29 +13,19 @@ fn panic(_info: &PanicInfo) -> ! {
 #[macro_export]
 macro_rules! println {
     () => (print(b"Default"));
-    ($arg:expr) => (print($arg));
-    ($($arg:tt)+) => (print_color($($arg)+));
+    ($arg:expr) => (print($arg,0x0));
+    ($($arg:tt)+) => (print($($arg)+));
     // ($($arg:tt)*) => (print($($arg)*));
 }
 
-fn print(name: &[u8]) {
+fn print(name: &str, color: u8) {
     let vga_buffer = 0xb8000 as *mut u8;
 
-    for (i, &byte) in name.iter().enumerate() {
+    let name_b = name.as_bytes();
+    for (i, &byte) in name_b.iter().enumerate() {
         unsafe {
             *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = i as u8;
-        }
-    }
-}
-
-fn print_color(name: &[u8], color: u8) {
-    let vga_buffer = 0xb8000 as *mut u8;
-
-    for (i, &byte) in name.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = color;
+            *vga_buffer.offset(i as isize * 2 + 1) = if color>0 { color } else { i as u8 };
         }
     }
 }
@@ -43,7 +33,7 @@ fn print_color(name: &[u8], color: u8) {
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     // println!();
-    println!(b"ggggggggggggggggggggggggggg",0xa);
+    println!("ggggggggggggggggggggggggggg",0xa);
 
     loop {}
 }
