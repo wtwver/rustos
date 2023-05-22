@@ -1,21 +1,16 @@
 # rustos
 
-cargo new blog_os --bin --edition 2018
+## A Freestanding Rust Binary
 
-cargo build
+- cargo new blog_os --edition 2018
+- no_std, panic_handler, Disabling Unwinding, no_main, \_start(), no_mangle
+- Linker err: cargo build --target thumbv7em-none-eabihf
+- x86_64-blog_os.json
+- rustup override set nightly
+- vga_buffer
+- cargo bootimage
+- qemu-system-x86_64 -drive format=raw,file=target/x86_64-blog_os/debug/bootimage-blog_os.bin
 
-//cross compile
+## VGA Text Mode
 
-rustup target add thumbv7em-none-eabihf
-
-cargo build --target thumbv7em-none-eabihf 
-
-rustup override set nightly
-
-rustup component add rust-src --toolchain nightly-x86_64-pc-windows-msvc
-
-cargo install bootimage
-
-rustup component add llvm-tools-preview
-
-cargo bootimage
+- mod vga_buffer;
