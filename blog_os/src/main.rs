@@ -44,29 +44,42 @@ macro_rules! println {
     // ($($arg:tt)*) => (print($($arg)*));
 }
 
-fn _print(name: &str, name2: &str, color: u8) {
+static mut count: isize = 0;
+
+fn _print(name: &str, color: u8) {
     let vga_buffer = 0xb8000 as *mut u8;
-
     let name_b = name.as_bytes();
-    let name_b2 = name2.as_bytes();
-    // name_b = name_b + name_b;
+    let temp = name_b.len() as isize *2;
+    // temp = 20 ;
+    // let name_b2 = name2.as_bytes();
 
-    let mut buffer: [u8; 100] = [0; 100];
-    buffer[0..name_b.len()].copy_from_slice(name_b);
-    buffer[name_b.len()..name_b.len() + name_b2.len()].copy_from_slice(name_b2);    // buffer[name_b2.len()..].copy_from_slice(name_b2);
+    // let mut buffer: [u8; 100] = [0; 100];
+    // buffer[0..name_b.len()].copy_from_slice(name_b);
+    // buffer[name_b.len()..name_b.len() + name_b2.len()].copy_from_slice(name_b2);   
 
-    for (i, &byte) in buffer.iter().enumerate() {
+    for (i, &byte) in name_b.iter().enumerate() {
         unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = if color>0 { color } else { i as u8 };
+            *vga_buffer.offset(i as isize * 2 + count ) = byte;
+            *vga_buffer.offset(i as isize * 2 + 1 + count) = if color>0 { color } else { i as u8 };
         }
     }
+    unsafe { count = count + temp; }
+}
+
+fn _println(){
+    unsafe { count = count + 250; }
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    // let String global = "Hello " + "GG" ;
-    _print("Hello ", "GGasdasdsadsadasdas",0xa);
+    _print("12345", 0xa);
+    _print("aaa", 0xa);
+    _print("bbb ", 0xa);
+    _println();
+    _print("ccc", 0xa);
+    _print("dd ", 0xa);
+    _print("ee", 0xa);
+    // _print("Hello2 ", 0xa);
 
     loop {}
 }
