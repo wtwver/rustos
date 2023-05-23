@@ -67,8 +67,11 @@ fn _print(name: &str, color: u8) {
 }
 
 fn _println(){
-    unsafe { count = count + 250; }
+    unsafe { count = count + 250;  }
 }
+
+use x86_64::structures::idt::InterruptDescriptorTable;
+
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -79,7 +82,10 @@ pub extern "C" fn _start() -> ! {
     _print("ccc", 0xa);
     _print("dd ", 0xa);
     _print("ee", 0xa);
-    // _print("Hello2 ", 0xa);
+    
+    x86_64::instructions::interrupts::int3();
+    _print("It did not crash", 0xa);
+
 
     loop {}
 }
