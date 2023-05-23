@@ -1,5 +1,6 @@
 #![no_std]
 #![no_main]
+#![feature(abi_x86_interrupt)]
 
 mod vga_buffer;
 
@@ -36,6 +37,21 @@ pub unsafe extern "C" fn memcpy(destination: *mut u8, source: *const u8, num: us
     destination
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn memcmp(s1: *const u8, s2: *const u8, n: usize) -> i32 {
+    let mut i = 0;
+    while i < n {
+        let b1 = *s1.add(i);
+        let b2 = *s2.add(i);
+        if b1 != b2 {
+            return b1 as i32 - b2 as i32;
+        }
+        i += 1;
+    }
+    0
+}
+
+
 #[macro_export]
 macro_rules! println {
     () => (_print(b"Default"));
@@ -70,11 +86,33 @@ fn _println(){
     unsafe { count = count + 250;  }
 }
 
-use x86_64::structures::idt::InterruptDescriptorTable;
 
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref IDT: InterruptDescriptorTable = {
+        let mut idt = InterruptDescriptorTable::new();
+        idt.breakpoint.set_handler_fn(breakpoint_handler);
+        idt
+    };
+}
+
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+
+extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame)
+{
+    println!("EXCEPTION: BREAKPOINT");
+}
+
+pub fn init_idt() {
+    IDT.load();
+}
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init_idt();
+
+
     _print("12345", 0xa);
     _print("aaa", 0xa);
     _print("bbb ", 0xa);
